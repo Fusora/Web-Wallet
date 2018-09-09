@@ -15,7 +15,7 @@
       <button class="button" v-on:click="signTransaction()"> Sign Transaction </button>
       <div v-if="this.signedTransaction === true" id="results">
         <div>Signed Transaction :</div>
-        <textarea v-model="transaction" readonly>
+        <textarea v-model="showtransaction" readonly>
         </textarea>
         <div/>
          <button class="button" v-on:click="sendTransaction()"> Send Transaction </button>
@@ -44,8 +44,9 @@ export default {
       signedTransaction: false,
       readyToSendTransaction: false,
       fee: 21000,
-      data: '',
-      transaction: null,
+      data: "",
+      showtransaction: null,
+      transaction: null
     };
   },
   methods: {
@@ -58,7 +59,7 @@ export default {
 function signTransaction() {
   try {
     const signingKey = new ethers.SigningKey(this.privateKey);
-    if(this.address.length !== 42 ) {
+    if (this.address.length !== 42) {
       let obj = {
         title: "Invalid Address",
         message: "",
@@ -68,7 +69,7 @@ function signTransaction() {
       return;
     }
 
-    if(this.fee <= 0) {
+    if (this.fee <= 0) {
       let obj = {
         title: "Invalid Fee",
         message: "",
@@ -78,7 +79,7 @@ function signTransaction() {
       return;
     }
 
-    if(this.address.length !== 42 ) {
+    if (this.address.length !== 42) {
       let obj = {
         title: "Invalid Address",
         message: "",
@@ -98,11 +99,12 @@ function signTransaction() {
       fee: this.fee,
       dateCreated: new Date().toString(),
       data: this.data,
-      senderPubKey:signingKey.publicKey,
-      senderSignature: senderSignature,
+      senderPubKey: signingKey.publicKey,
+      senderSignature: senderSignature
     };
     this.signedTransaction = true;
-    this.transaction = JSON.stringify(transaction);
+    this.transaction = transaction;
+    this.showtransaction = JSON.stringify(transaction);
   } catch (err) {
     console.log(err.message);
     if (err.message.includes("invalid private key")) {
@@ -117,7 +119,26 @@ function signTransaction() {
 }
 
 function sendTransaction() {
-
+  axios
+    .post("http://fusora.herokuapp.com/transaction/send", this.transaction)
+    .then(function(response) {
+      let obj = {
+        title: "Success Private Key",
+        message: "",
+        type: "success"
+      };
+      this.$refs.simplert.openSimplert(obj);
+      console.log(response);
+    })
+    .catch(function(error) {
+       let obj = {
+        title: "Error",
+        message: error.message,
+        type: "error"
+      };
+      this.$refs.simplert.openSimplert(obj);
+      console.log(error);
+    });
 }
 </script>
 
@@ -142,7 +163,7 @@ input {
   margin: 10px;
 }
 
-textArea {
+textarea {
   width: 700px;
   height: 200px;
   border-radius: 5px;
