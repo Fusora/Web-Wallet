@@ -2,15 +2,15 @@
 	<div id="sendTransaction">
     <div id="innerTransaction">
       <div>Private Key :</div>
-		  <input v-model="privateKey" placeholder="Private Key">
+		  <input class="input" v-model="privateKey" placeholder="Private Key">
       <div>Recipient Address :</div>
-		  <input v-model="address" placeholder="Address">
+		  <input class="input" v-model="address" placeholder="Address">
       <div>Fee :</div>
-		  <input v-model="fee" placeholder="Fee">
+		  <input class="input" v-model="fee" placeholder="Fee">
       <div>Data :</div>
-		  <input v-model="data" placeholder="Data(optional)">
+		  <input class="input" v-model="data" placeholder="Data(optional)">
 		  <div>Amount :</div>
-		  <input v-model="amount" type="number"  placeholder="Amount">  
+		  <input class="input" v-model="amount" type="number"  placeholder="Amount">  
       <div/>
       <button class="button" v-on:click="signTransaction()"> Sign Transaction </button>
       <div v-if="this.signedTransaction === true" id="results">
@@ -18,7 +18,7 @@
         <textarea v-model="showtransaction" readonly>
         </textarea>
         <div/>
-         <button class="button" v-on:click="sendTransaction()"> Send Transaction </button>
+        <button class="button" v-on:click="sendTransaction()"> Send Transaction </button>
       </div>
     </div>
 
@@ -95,18 +95,17 @@ function signTransaction() {
     const transaction = {
       from: signingKey.address,
       to: this.address,
-      value: this.amount,
-      fee: this.fee,
+      value: parseInt(this.amount),
+      fee: parseInt(this.fee),
       dateCreated: new Date().toString(),
       data: this.data,
       senderPubKey: signingKey.publicKey,
-      senderSignature: senderSignature
+      senderSignature
     };
     this.signedTransaction = true;
     this.transaction = transaction;
     this.showtransaction = JSON.stringify(transaction);
   } catch (err) {
-    console.log(err.message);
     if (err.message.includes("invalid private key")) {
       let obj = {
         title: "Invalid Private Key",
@@ -120,24 +119,32 @@ function signTransaction() {
 
 function sendTransaction() {
   axios
-    .post("http://fusora.herokuapp.com/transaction/send", this.transaction)
-    .then(function(response) {
+    .post("http://fusora.herokuapp.com/transactions/send", {
+      data: this.transaction,
+      headers: {
+        "crossDomain": true,
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods":
+          "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
+      }
+    })
+    .then(response => {
       let obj = {
         title: "Success Private Key",
         message: "",
         type: "success"
       };
+      this.signedTransaction = false;
       this.$refs.simplert.openSimplert(obj);
-      console.log(response);
     })
-    .catch(function(error) {
-       let obj = {
+    .catch(error => {
+      let obj = {
         title: "Error",
         message: error.message,
         type: "error"
       };
       this.$refs.simplert.openSimplert(obj);
-      console.log(error);
     });
 }
 </script>
@@ -156,7 +163,7 @@ function sendTransaction() {
   color: #e0ffff;
 }
 
-input {
+.input {
   width: 700px;
   height: 30px;
   border-radius: 5px;

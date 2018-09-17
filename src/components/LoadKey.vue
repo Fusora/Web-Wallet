@@ -1,10 +1,15 @@
 <template>
-	<div>
-		<div> Import your JSON Wallet </div>
-    <input type="file" v-on:change="handleFileUpload">
-    <div>Password :</div>
-		<input v-model="password" placeholder="Password">
-  	<button v-on:click="loadWallet()"> Generate Wallet </button>
+	<div id="loadKey">
+		<div id="innerTransaction"> 
+      <div> Address :</div>
+		  <input class="input" v-model="address" placeholder="Private Key">   
+      <div />
+      <button class="button" v-on:click="loadKey()"> Load Key </button>
+      <div/>
+      <div v-if="this.walletLoaded === true" id="results">
+        <div>Balance : {{balance}}</div>
+      </div>
+    </div>
 	</div>
 </template>
 
@@ -14,39 +19,37 @@ import axios from "axios";
 export default {
   data: function() {
     return {
-      privateKey: '',
-      address: '',
-      amount: 0,
-      password: '',
-      wallet: null
+      address: "",
+      balance: 0,
+      walletLoaded: false,
     };
   },
   methods: {
-    handleFileUpload,
-    loadWallet,
+    loadKey,
   }
 };
 
-function handleFileUpload(e) {
-  let reader = new FileReader();
-  reader.onload = event => {
-    if (event.target.readyState === 2) {
-      const jsWallet = (reader.result);
-      this.wallet = jsWallet;
-    }
-  };
-  reader.readAsText(event.target.files[0]);
-}
-
-function loadWallet() {
-  const jsonWallet = this.wallet;
-  const password = this.password;
-  ethers.Wallet.fromEncryptedWallet(jsonWallet, password).then(wallet => {
-    console.log(wallet);
-  });
+function loadKey() {
+  axios.get(`http://fusora.herokuapp.com/address/${this.address}/balance`)
+    .then(response => {
+      this.walletLoaded = true;
+      this.balance = response.data.balance;
+      console.log(response);
+    })
+    .catch(err => {
+      console.log(err)
+    })
 }
 </script>
 
 <style>
+#loadKey {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
 </style>
  

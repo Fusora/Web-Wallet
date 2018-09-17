@@ -53,28 +53,8 @@ function generateWallet() {
     this.showAddress = walletInstance.address;
     this.showPrivateKey = hdNode.privateKey;
     this.showPublicKey = hdNode.publicKey;
-    downloadObjectAsJson({
-      address: this.showAddress,
-      privateKey: this.showPrivateKey,
-      publicKey: this.showPublicKey
-    })
-  } catch (err) {}
-}
 
-function downloadObjectAsJson(exportObj) {
-  // for downloading purposes
-  let filename =
-    "FUSORA_WALLET_" +
-    Math.ceil(Math.random(10000, 10000) * 10 ** 20) +
-    ".json";
-  let dataStr =
-    "data:text/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(exportObj));
-  let downloadAnchorNode = document.createElement("a");
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", filename);
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
+  } catch (err) {}
 }
 </script>
 

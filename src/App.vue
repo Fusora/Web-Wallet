@@ -26,7 +26,6 @@ export default {
 
 <style>
 #app {
-  margin: 0;
   background: linear-gradient(#005de0, #00c4fb);
   overflow: auto;
   padding: 0;
