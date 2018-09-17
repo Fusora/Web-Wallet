@@ -30,7 +30,8 @@ export default {
 };
 
 function loadKey() {
-  axios.get(`fusora.herokuapp.com/address/${this.address}/balance`,  { crossdomain: true })
+  // axios.get(`fusora.herokuapp.com/address/${this.address}/balance`,  { crossdomain: true })
+   fetch(`fusora.herokuapp.com/address/${this.address}/balance`) 
     .then(response => {
       this.walletLoaded = true;
       this.balance = response.data.balance;
