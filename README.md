@@ -1,6 +1,7 @@
 # web-wallet
 
 > A Vue.js project
+Deployed link: https://fusorawallet.herokuapp.com/#/
 
 ## Build Setup
 
