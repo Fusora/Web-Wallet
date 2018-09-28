@@ -121,8 +121,12 @@ function signTransaction() {
 
 function sendTransaction() {
   axios
-    .post("http://fusora.herokuapp.com/transactions/send", {
-      ...this.transaction,
+    .post("http://fusora.herokuapp.com/transactions/send", this.transaction, {
+      responseType: 'json',
+      headers: {
+      Accept:'application/json',
+      "Content-Type": 'application/json',
+      }
     })
     .then(response => {
       let obj = {
