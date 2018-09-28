@@ -97,11 +97,13 @@ function signTransaction() {
       to: this.address,
       value: parseInt(this.amount),
       fee: parseInt(this.fee),
-      dateCreated: new Date().toString(),
+      dateCreated: new Date().toISOString(),
       data: this.data,
       senderPubKey: signingKey.publicKey,
       senderSignature
     };
+
+    console.log(transaction);
     this.signedTransaction = true;
     this.transaction = transaction;
     this.showtransaction = JSON.stringify(transaction);
@@ -120,14 +122,7 @@ function signTransaction() {
 function sendTransaction() {
   axios
     .post("http://fusora.herokuapp.com/transactions/send", {
-      data: this.transaction,
-      headers: {
-        "crossDomain": true,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods":
-          "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
-      }
+      ...this.transaction,
     })
     .then(response => {
       let obj = {

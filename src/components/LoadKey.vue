@@ -2,44 +2,59 @@
 	<div id="loadKey">
 		<div id="innerTransaction"> 
       <div> Address :</div>
-		  <input class="input" v-model="address" placeholder="Private Key">   
+		  <input class="input" v-model="address" placeholder="Address">   
       <div />
       <button class="button" v-on:click="loadKey()"> Load Key </button>
       <div/>
       <div v-if="this.walletLoaded === true" id="results">
-        <div>Balance : {{balance}}</div>
+        <div>Safe Balance : {{safeBalance}}</div>
+        <div>Confirmed Balance : {{confirmedBalance}}</div>
+        <div>Pending Balance : {{pendingBalance}}</div>
       </div>
     </div>
+    <simplert :useRadius="true"
+          :useIcon="true"
+          ref="simplert">
+    </simplert>
 	</div>
 </template>
-
 <script>
 import ethers from "ethers";
 import axios from "axios";
+import Simplert from "vue2-simplert";
 export default {
   data: function() {
     return {
       address: "",
-      balance: 0,
-      walletLoaded: false,
+      confirmedBalance: 0,
+      pendingBalance: 0,
+      safeBalance: 0,
+      walletLoaded: false
     };
   },
   methods: {
-    loadKey,
-  }
+    loadKey
+  },
+  components: { Simplert }
 };
 
 function loadKey() {
-  // axios.get(`fusora.herokuapp.com/address/${this.address}/balance`,  { crossdomain: true })
-   fetch(`fusora.herokuapp.com/address/${this.address}/balance`, {mode: 'cors'}) 
+  axios
+    .get(`http://fusora.herokuapp.com/address/${this.address}/balance`)
     .then(response => {
       this.walletLoaded = true;
-      this.balance = response.data.balance;
-      console.log(response);
+      this.confirmedBalance = response.data.balance.confirmed;
+      this.pendingBalance = response.data.balance.pending;
+      this.safeBalance = response.data.balance.safe;
     })
     .catch(err => {
-      console.log(err)
-    })
+      let obj = {
+        title: "Invalid Address",
+        message: "",
+        type: "error"
+      };
+      this.$refs.simplert.openSimplert(obj);
+    });
 }
 </script>
 
@@ -51,6 +66,24 @@ function loadKey() {
   justify-content: center;
   text-align: center;
   padding: 20px;
+}
+
+.input {
+  width: 700px;
+  height: 30px;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+.button {
+  margin: 15px;
+  border-radius: 10px;
+  padding: 12px 28px;
+  background-color: #000060;
+  border-color: #005de0;
+  color: #e0ffff;
+  font-family: "Lato", sans-serif;
+  font-size: 15px;
 }
 </style>
  
